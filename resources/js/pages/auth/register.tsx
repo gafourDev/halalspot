@@ -14,6 +14,7 @@ type RegisterForm = {
     email: string;
     password: string;
     password_confirmation: string;
+    role_id: number;
 };
 
 export default function Register() {
@@ -22,6 +23,7 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
+        role_id: 1, // Default to 'User'
     });
 
     const submit: FormEventHandler = (e) => {
@@ -35,6 +37,33 @@ export default function Register() {
         <AuthLayout title="Create an account" description="Enter your details below to create your account">
             <Head title="Register" />
             <form className="flex flex-col gap-6" onSubmit={submit}>
+                <div className="flex items-center gap-4">
+                    <Label className="mb-0">Register as:</Label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="radio"
+                            name="role_id"
+                            value={1}
+                            checked={data.role_id === 1}
+                            onChange={() => setData('role_id', 1)}
+                            disabled={processing}
+                            className="accent-primary"
+                        />
+                        <span>User</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="radio"
+                            name="role_id"
+                            value={2}
+                            checked={data.role_id === 2}
+                            onChange={() => setData('role_id', 2)}
+                            disabled={processing}
+                            className="accent-primary"
+                        />
+                        <span>Owner</span>
+                    </label>
+                </div>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="name">Name</Label>
