@@ -24,10 +24,8 @@ return new class extends Migration
             $table->string('price_range')->nullable();
             $table->string('phone')->nullable();
             $table->text('image')->nullable(); // Assuming you want to store image URLs or paths
-            $table->string('slug')->unique(); // For SEO-friendly URLs
             $table->boolean('is_active')->default(true); // To manage active/inactive status
             $table->boolean('is_featured')->default(false); // To mark featured restaurants
-            
             $table->timestamps();
         });
     }

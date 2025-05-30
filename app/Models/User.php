@@ -25,7 +25,7 @@ class User extends Authenticatable
     ];
 
     public function role()
-    {   
+    {
         // Define a many-to-one relationship with the Role model
         // This means a user belongs to one role
         // and a role can have many users associated with it
@@ -43,7 +43,7 @@ class User extends Authenticatable
     }
 
     public function isAdmin()
-    {   
+    {
         // Check if the user's role is ADMIN
         // This method is used to determine if the user has admin privileges
         // It returns true if the user is an admin, false otherwise
@@ -64,6 +64,34 @@ class User extends Authenticatable
         // This method is used to determine if the user has regular user privileges
         // It returns true if the user is a regular user, false otherwise
         return $this->role_id === Role::USER;
+    }
+
+
+    /**
+     * Assign a role to the user by ID or name
+     *
+     * @param int|string $role
+     * @return $this
+     * @throws \Exception
+     */
+    public function assignRole($role)
+    {
+        // If role is an integer, treat it as role_id
+        if (is_numeric($role)) {
+            $roleModel = Role::find($role);
+        } else {
+            // If role is a string, treat it as role name
+            $roleModel = Role::where('name', $role)->first();
+        }
+
+        if (!$roleModel) {
+            throw new \Exception("Role not found");
+        }
+
+        $this->role_id = $roleModel->id;
+        $this->save();
+
+        return $this;
     }
 
     /**

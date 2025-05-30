@@ -24,7 +24,7 @@ class Restaurant extends Model
     // This method defines a many-to-one relationship
     // A restaurant belongs to one user (owner)
     public function user()
-    {   
+    {
         return $this->belongsTo(User::class);
     }
 
@@ -34,11 +34,11 @@ class Restaurant extends Model
     }
 
     // Example relationship: A restaurant has many menus
-    public function menus()
-    {
-        // This method defines a one-to-many relationship
-        // A restaurant can have many menus
-        // and a menu belongs to one restaurant
-        return $this->hasMany(Menu::class);
-    }
+    // public function menus()
+    // {
+    //     // This method defines a one-to-many relationship
+    //     // A restaurant can have many menus
+    //     // and a menu belongs to one restaurant
+    //     return $this->hasMany(Menu::class);
+    // }
 }

@@ -30,6 +30,10 @@ Route::middleware(['auth', 'role:user,owner'])->group(function () {
     Route::get('/user/dashboard', function () {
         return Inertia::render('users/dashboard');
     })->name('user.dashboard');
+
+    Route::get('/owner/dashboard', function () {
+        return Inertia::render('owner/dashboard');
+    })->name('owner.dashboard');
 });
 
 require __DIR__.'/settings.php';

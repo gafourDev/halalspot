@@ -31,23 +31,38 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        // Only allow role_id 2 (Owner) or 3 (User)
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role_id' => 'required|exists:roles,id', // Only allow owner (2) or user (3)
+            'role_id' => 'required|in:2,3',
         ]);
 
         $user = User::create([
-            'role_id' => $request->role_id ?? 1,
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'role_id' => $validated['role_id'],
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
         event(new Registered($user));
+        if($validated['role_id'] == Role::OWNER) {
+            $user->assignRole(Role::OWNER);
+        } else {
+            $user->assignRole(Role::USER);
+        }
+        // Automatically log in the user after registration
         Auth::login($user);
 
-        return to_route('dashboard');
+        // Redirect to the appropriate dashboard based on the role
+        if ($user->isOwner()) {
+            return to_route('owner.dashboard');
+        }
+        if ($user->isUser()) {
+            return to_route('user.dashboard');
+        }
+        // Default fallback (just in case)
+        return redirect()->route('login');
     }
 }

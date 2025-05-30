@@ -10,20 +10,20 @@ import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
 
 type RegisterForm = {
+    role_id: number;
     name: string;
     email: string;
     password: string;
     password_confirmation: string;
-    role_id: number;
 };
 
 export default function Register() {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
+    const { data, setData, post, processing, errors, reset } = useForm<RegisterForm>({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
-        role_id: 1, // Default to 'User'
+        role_id: 3
     });
 
     const submit: FormEventHandler = (e) => {
@@ -37,33 +37,33 @@ export default function Register() {
         <AuthLayout title="Create an account" description="Enter your details below to create your account">
             <Head title="Register" />
             <form className="flex flex-col gap-6" onSubmit={submit}>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 mb-4">
                     <Label className="mb-0">Register as:</Label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="radio"
-                            name="role_id"
-                            value={1}
-                            checked={data.role_id === 1}
-                            onChange={() => setData('role_id', 1)}
-                            disabled={processing}
-                            className="accent-primary"
-                        />
-                        <span>User</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                            type="radio"
-                            name="role_id"
-                            value={2}
-                            checked={data.role_id === 2}
-                            onChange={() => setData('role_id', 2)}
-                            disabled={processing}
-                            className="accent-primary"
-                        />
-                        <span>Owner</span>
-                    </label>
-                </div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="radio"
+                                name="role_id"
+                                value={3}
+                                checked={data.role_id === 3}
+                                onChange={() => setData('role_id', 3)}
+                                disabled={processing}
+                                className="accent-primary"
+                            />
+                            <span>Food Explorer</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="radio"
+                                name="role_id"
+                                value={2}
+                                checked={data.role_id === 2}
+                                onChange={() => setData('role_id', 2)}
+                                disabled={processing}
+                                className="accent-primary"
+                            />
+                            <span>Restaurant Owner</span>
+                        </label>
+                    </div>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="name">Name</Label>
@@ -81,7 +81,6 @@ export default function Register() {
                         />
                         <InputError message={errors.name} className="mt-2" />
                     </div>
-
                     <div className="grid gap-2">
                         <Label htmlFor="email">Email address</Label>
                         <Input
@@ -97,7 +96,6 @@ export default function Register() {
                         />
                         <InputError message={errors.email} />
                     </div>
-
                     <div className="grid gap-2">
                         <Label htmlFor="password">Password</Label>
                         <Input
@@ -113,7 +111,6 @@ export default function Register() {
                         />
                         <InputError message={errors.password} />
                     </div>
-
                     <div className="grid gap-2">
                         <Label htmlFor="password_confirmation">Confirm password</Label>
                         <Input
@@ -135,7 +132,6 @@ export default function Register() {
                         Create account
                     </Button>
                 </div>
-
                 <div className="text-muted-foreground text-center text-sm">
                     Already have an account?{' '}
                     <TextLink href={route('login')} tabIndex={6}>

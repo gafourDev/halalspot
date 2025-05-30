@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Role;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,11 +17,11 @@ class AuthenticatedSessionController extends Controller
     /**
      * Show the login page.
      */
-    public function create(Request $request): Response
+    public function create(): Response
     {
         return Inertia::render('auth/login', [
             'canResetPassword' => Route::has('password.request'),
-            'status' => $request->session()->get('status'),
+            'status' => session('status'),
         ]);
     }
 
@@ -29,11 +30,20 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        try {
+            $request->authenticate();
+            $request->session()->regenerate();
 
-        $request->session()->regenerate();
+            $user = Auth::user();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+            if (!$user) {
+                return $this->handleFailedLogin();
+            }
+
+            return $this->handleSuccessfulLogin($user);
+        } catch (\Exception $e) {
+            return $this->handleFailedLogin();
+        }
     }
 
     /**
@@ -46,6 +56,29 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
+    }
+
+    /**
+     * Handle successful login and redirect based on role.
+     */
+    private function handleSuccessfulLogin($user): RedirectResponse
+    {
+        return match ($user->role_id) {
+            Role::ADMIN => redirect()->intended(route('admin.dashboard')),
+            Role::OWNER => redirect()->intended(route('owner.dashboard')),
+            Role::USER => redirect()->intended(route('user.dashboard')),
+            default => redirect()->intended(route('dashboard')),
+        };
+    }
+
+    /**
+     * Handle failed login attempt.
+     */
+    private function handleFailedLogin(): RedirectResponse
+    {
+        return redirect()
+            ->route('login')
+            ->withErrors(['email' => __('auth.failed')]);
     }
 }
